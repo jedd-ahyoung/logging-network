@@ -1,6 +1,6 @@
 {
   "name": "aurelia-logging-network",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A network-based log appender for the Aurelia logging library.",
   "keywords": [
     "aurelia",
@@ -10,7 +10,7 @@
   "main": "dist/commonjs/aurelia-logging-network.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jedd-ahyoung/logging-console"
+    "url": "http://github.com/jedd-ahyoung/logging-network"
   },
   "jspm": {
     "main": "aurelia-logging-network",

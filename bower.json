@@ -1,21 +1,19 @@
 {
-  "name": "aurelia-logging-console",
-  "version": "0.7.1",
+  "name": "aurelia-logging-network",
+  "version": "0.0.1",
   "description": "A console log appender for the Aurelia logging library.",
   "keywords": [
     "aurelia",
     "logging"
   ],
-  "homepage": "http://aurelia.io",
   "license": "MIT",
-  "authors": [
-    "Rob Eisenberg <rob@bluespire.com> (http://robeisenberg.com/)"
-  ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/aurelia/logging-console"
+    "url": "http://github.com/jedd-ahyoung/logging-network"
   },
   "dependencies": {
-    "aurelia-logging": "^0.7.0"
+    "aurelia-logging": "^0.7.0",
+    "aurelia-pal": "^0.1.9",
+    "aurelia-pal-browser": "^0.1.12"
   }
 }
