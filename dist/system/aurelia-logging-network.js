@@ -1,7 +1,7 @@
 System.register(['aurelia-pal', 'aurelia-logging'], function (_export) {
 	'use strict';
 
-	var DOM, Logger, NetworkAppenderBuilder, NetworkAppenderQueue, dom, NetworkAppender;
+	var DOM, Logger, NetworkAppenderBuilder, NetworkAppenderQueue, NetworkAppender;
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -56,11 +56,6 @@ System.register(['aurelia-pal', 'aurelia-logging'], function (_export) {
 			})();
 
 			_export('NetworkAppenderQueue', NetworkAppenderQueue);
-
-			dom = {
-				addEventListener: DOM.addEventListener || window.addEventListener,
-				removeEventListener: DOM.removeEventListener || window.removeEventListener
-			};
 
 			NetworkAppender = (function () {
 				function NetworkAppender() {
@@ -134,16 +129,26 @@ System.register(['aurelia-pal', 'aurelia-logging'], function (_export) {
 			};
 
 			NetworkAppender.prototype.send = function () {
-				if (!this.http.isRequesting) {
-					this.http.post(this.endpoint, this.queue.drain());
-					return;
+				function sendLogs() {
+					window.removeEventListener('aurelia-http-client-requests-drained', sendLogs);
+					networkAppender.http.post(networkAppender.endpoint, networkAppender.queue.drain()).then(function () {
+						networkAppender.isPending = false;
+					})['catch'](function () {
+						return void 0;
+					});
 				}
 
 				var networkAppender = this;
-				dom.addEventListener('aurelia-http-client-requests-drained', function sendLogs() {
-					networkAppender.http.post(networkAppender.endpoint, networkAppender.queue.drain());
-					dom.removeEventListener('aurelia-http-client-requests-drained', sendLogs);
-				});
+
+				if (!this.http.isRequesting) {
+					sendLogs();
+					return;
+				}
+
+				if (!this.isPending) {
+					this.isPending = true;
+					window.addEventListener('aurelia-http-client-requests-drained', sendLogs);
+				}
 			};
 		}
 	};

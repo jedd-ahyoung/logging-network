@@ -53,11 +53,6 @@ var NetworkAppenderQueue = (function () {
 
 exports.NetworkAppenderQueue = NetworkAppenderQueue;
 
-var dom = {
-	addEventListener: _aureliaPal.DOM.addEventListener || window.addEventListener,
-	removeEventListener: _aureliaPal.DOM.removeEventListener || window.removeEventListener
-};
-
 var NetworkAppender = (function () {
 	function NetworkAppender() {
 		_classCallCheck(this, NetworkAppender);
@@ -130,14 +125,24 @@ NetworkAppender.prototype.configure = function (fn) {
 };
 
 NetworkAppender.prototype.send = function () {
-	if (!this.http.isRequesting) {
-		this.http.post(this.endpoint, this.queue.drain());
-		return;
+	function sendLogs() {
+		window.removeEventListener('aurelia-http-client-requests-drained', sendLogs);
+		networkAppender.http.post(networkAppender.endpoint, networkAppender.queue.drain()).then(function () {
+			networkAppender.isPending = false;
+		})['catch'](function () {
+			return void 0;
+		});
 	}
 
 	var networkAppender = this;
-	dom.addEventListener('aurelia-http-client-requests-drained', function sendLogs() {
-		networkAppender.http.post(networkAppender.endpoint, networkAppender.queue.drain());
-		dom.removeEventListener('aurelia-http-client-requests-drained', sendLogs);
-	});
+
+	if (!this.http.isRequesting) {
+		sendLogs();
+		return;
+	}
+
+	if (!this.isPending) {
+		this.isPending = true;
+		window.addEventListener('aurelia-http-client-requests-drained', sendLogs);
+	}
 };

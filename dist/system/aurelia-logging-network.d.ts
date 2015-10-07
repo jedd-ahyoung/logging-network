@@ -12,6 +12,7 @@ declare module 'aurelia-logging-network' {
     drain(): any;
   }
   
+  /* */
   /*
    * An implementation of the Appender interface.
    */

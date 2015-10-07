@@ -32,12 +32,7 @@ export class NetworkAppenderQueue {
 	}
 }
 
-// For the time being, I'm not sure how to use aurelia-pal. Just use the window element instead.
-let dom = {
-	addEventListener: DOM.addEventListener || window.addEventListener,
-	removeEventListener: DOM.removeEventListener || window.removeEventListener
-};
-
+/* */
 /*
  * An implementation of the Appender interface.
  */
@@ -119,14 +114,25 @@ NetworkAppender.prototype.configure = function (fn) {
 };
 
 NetworkAppender.prototype.send = function () {
-	if (!this.http.isRequesting) {
-		this.http.post(this.endpoint, this.queue.drain());
-		return;
+	// For the time being, I'm not sure how to use aurelia-pal. Just use the window element instead.
+	function sendLogs () {
+		window.removeEventListener('aurelia-http-client-requests-drained', sendLogs);
+		networkAppender.http.post(networkAppender.endpoint, networkAppender.queue.drain())
+			.then(() => {
+				networkAppender.isPending = false;
+			})
+			.catch(() => void(0));
 	}
 
 	let networkAppender = this;
-	dom.addEventListener('aurelia-http-client-requests-drained', function sendLogs () {
-		networkAppender.http.post(networkAppender.endpoint, networkAppender.queue.drain());
-		dom.removeEventListener('aurelia-http-client-requests-drained', sendLogs);
-	});
+
+	if (!this.http.isRequesting) {
+		sendLogs();
+		return;
+	}
+
+	if (!this.isPending) {
+		this.isPending = true;
+		window.addEventListener('aurelia-http-client-requests-drained', sendLogs);
+	}
 };
