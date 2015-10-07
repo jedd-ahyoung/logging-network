@@ -1,0 +1,9 @@
+{
+  "extends": "./node_modules/aurelia-tools/.eslintrc",
+  "rules": {
+    "no-console": 0,
+    "no-cond-assign": 0,
+    "indent": [2, "tab"],
+    "space-before-function-paren": [1, "always"]
+  }
+}
